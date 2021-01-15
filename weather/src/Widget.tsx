@@ -2,9 +2,11 @@ import * as React from "react";
 import styled from "styled-components";
 import { useEffect, useState } from "react";
 
-const Input = styled.input`
-  margin-bottom: 8px;
-`;
+import { City } from "./components/Forms/City";
+import { CurrentTemp } from "./components/CurrentTemp";
+import { Icon } from "./components/Icon";
+
+import { api } from "./constants";
 
 const WidgetContainer = styled.div`
   display: flex;
@@ -16,66 +18,60 @@ const WidgetContainer = styled.div`
   border-radius: 8px;
 `;
 
-const Icon = styled.img`
-  width: 100px;
-  height: 100px;
-`;
+const Title = styled.h4``;
 
-const city = "Ижевск";
-const apiKey = "010c77dd61b4a432046abd8f5332d49b";
-const api = `https://api.openweathermap.org/data/2.5/weather?q=${city}&lang=ru&units=metric&appid=${apiKey}`;
-const getIconUrl = (code: string) =>
-  `http://openweathermap.org/img/wn/${code}@2x.png`;
-
-interface Temperature {
+export interface Temperature {
   temp: number;
-  feelsLike: string;
+  feelsLike: number;
+  icon: string;
+  description: string;
 }
 
 const Widget = () => {
-  const [iconUrl, setIconUrl] = useState("");
-  const [temperature, setTemperature] = useState<Temperature | null>(null);
+  const [tempParams, setTempParams] = useState<Temperature | null>(null);
   const [cityValue, setCityValue] = useState("");
-  const [title, setTitle] = useState('Введите название города');
+  const [currentCity, setCurrentCity] = useState<string | null>(null);
 
   useEffect(() => {
     const getWeather = async (counter: number) => {
-      if (counter === 0) return;
+      if (!currentCity || counter === 0) return;
       try {
-        const response = await fetch(api);
+        const url = `${api.current}?${api.city(currentCity)}&${api.query}`;
+        const response = await fetch(url);
         const weatherData = await response.json();
         const { temp, feels_like: feelsLike } = weatherData.main;
-        const { icon } = weatherData.weather[0];
-        setTemperature({ temp, feelsLike });
-        setIconUrl(getIconUrl(icon));
+        const { icon, description } = weatherData.weather[0];
+        setTempParams({ temp, feelsLike, icon, description });
       } catch (e) {
         getWeather(counter - 1);
       }
     };
     getWeather(5);
-  }, [title]);
+  }, [currentCity]);
 
-  const inputCity = (e: React.ChangeEvent<HTMLInputElement>) =>
+  const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) =>
     setCityValue(e.target.value);
+
   const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setTitle(cityValue);
-    setCityValue('');
+    setCurrentCity(cityValue);
+    setCityValue("");
   };
 
   return (
     <WidgetContainer>
-      <h4>{title}</h4>
-      <form onSubmit={submitHandler}>
-        <Input type="text" name="city" onChange={inputCity} value={cityValue} />
-      </form>
-      {temperature && (
-        <p>
-          {temperature.temp}&#176;
-          <span> (feels like {temperature.feelsLike})&#176;</span>
-        </p>
+      <Title>{currentCity ? currentCity : "Введите название города"}</Title>
+      <City
+        value={cityValue}
+        changeHandler={changeHandler}
+        submitHandler={submitHandler}
+      />
+      {tempParams && (
+        <>
+          <CurrentTemp tempParams={tempParams} />
+          <Icon icon={tempParams.icon} description={tempParams.description} />
+        </>
       )}
-      <Icon src={iconUrl} alt="icon weather" />
     </WidgetContainer>
   );
 };
