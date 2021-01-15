@@ -1,7 +1,7 @@
 /// <reference types="react" />
 
-declare module "weather/Button" {
-  const Button: React.ComponentType;
+declare module "weather/Widget" {
+  const Widget: React.ComponentType;
 
-  export default Button;
+  export default Widget;
 }

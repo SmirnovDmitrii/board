@@ -39,9 +39,9 @@ module.exports = {
       name: "weather",
       filename: "remoteEntry.js",
       exposes: {
-        "./Button": "./src/Button",
+        "./Widget": "./src/Widget",
       },
-      shared: ["react", "react-dom"],
+      shared: [{ react: { singleton: true } }],
     }),
     new HtmlWebpackPlugin({
       template: "./public/index.html",
