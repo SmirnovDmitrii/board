@@ -1,10 +1,9 @@
 import * as React from "react";
 import styled from "styled-components";
+import { useState } from "react";
 
 interface CityProps {
-  value: string;
-  changeHandler: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  submitHandler: (e: React.FormEvent<HTMLFormElement>) => void;
+  onFormSubmit: (value: string) => void;
 }
 
 const Input = styled.input`
@@ -12,10 +11,19 @@ const Input = styled.input`
 `;
 
 export const City = (props: CityProps) => {
-  const { value, changeHandler, submitHandler } = props;
+  const [cityValue, setCityValue] = useState("");
+  const { onFormSubmit } = props;
+
+  const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) => setCityValue(e.target.value);
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    onFormSubmit(cityValue);
+    setCityValue("");
+  };
+
   return (
-    <form onSubmit={submitHandler}>
-      <Input type="text" name="city" onChange={changeHandler} value={value} />
+    <form onSubmit={handleSubmit}>
+      <Input type="text" name="city" onChange={changeHandler} value={cityValue} />
     </form>
   );
 };

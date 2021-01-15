@@ -29,7 +29,6 @@ export interface Temperature {
 
 const Widget = () => {
   const [tempParams, setTempParams] = useState<Temperature | null>(null);
-  const [cityValue, setCityValue] = useState("");
   const [currentCity, setCurrentCity] = useState<string | null>(null);
 
   useEffect(() => {
@@ -49,23 +48,12 @@ const Widget = () => {
     getWeather(5);
   }, [currentCity]);
 
-  const changeHandler = (e: React.ChangeEvent<HTMLInputElement>) =>
-    setCityValue(e.target.value);
-
-  const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setCurrentCity(cityValue);
-    setCityValue("");
-  };
+  const handleFormSubmit = (value: string) => setCurrentCity(value);
 
   return (
     <WidgetContainer>
       <Title>{currentCity ? currentCity : "Введите название города"}</Title>
-      <City
-        value={cityValue}
-        changeHandler={changeHandler}
-        submitHandler={submitHandler}
-      />
+      <City onFormSubmit={handleFormSubmit} />
       {tempParams && (
         <>
           <CurrentTemp tempParams={tempParams} />
