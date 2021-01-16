@@ -29,7 +29,7 @@ export interface Temperature {
 
 const Widget = () => {
   const [tempParams, setTempParams] = useState<Temperature | null>(null);
-  const [currentCity, setCurrentCity] = useState<string | null>(null);
+  const [currentCity, setCurrentCity] = useState<string | null>(window.localStorage.getItem('currentCity'));
 
   useEffect(() => {
     const getWeather = async (counter: number) => {
@@ -48,7 +48,10 @@ const Widget = () => {
     getWeather(5);
   }, [currentCity]);
 
-  const handleFormSubmit = (value: string) => setCurrentCity(value);
+  const handleFormSubmit = (value: string) => {
+    window.localStorage.setItem('currentCity', value);
+    setCurrentCity(value);
+  }
 
   return (
     <WidgetContainer>
