@@ -2,7 +2,7 @@ import * as React from "react";
 import styled from "styled-components";
 import { useEffect, useState } from "react";
 
-import { City } from "./components/Forms/City";
+import { InputForm } from "./components/Forms/InputForm";
 import { CurrentTemp } from "./components/CurrentTemp";
 import { Icon } from "./components/Icon";
 
@@ -53,7 +53,7 @@ const Widget = () => {
   return (
     <WidgetContainer>
       <Title>{currentCity ? currentCity : "Введите название города"}</Title>
-      <City onFormSubmit={handleFormSubmit} />
+      <InputForm onFormSubmit={handleFormSubmit} name="city" />
       {tempParams && (
         <>
           <CurrentTemp tempParams={tempParams} />
